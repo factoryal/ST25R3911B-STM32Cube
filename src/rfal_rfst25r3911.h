@@ -37,7 +37,7 @@
 ******************************************************************************
 */
 
-#include "SPI.h"
+// #include "SPI.h"
 #include "rfal_rf.h"
 #include "st_errno.h"
 #include "nfc_utils.h"
@@ -46,6 +46,7 @@
 #include "st25r3911_interrupt.h"
 #include "rfal_rfst25r3911_analogConfig.h"
 #include "rfal_rfst25r3911_iso15693_2.h"
+#include <functional>
 
 /*
  ******************************************************************************
@@ -373,7 +374,8 @@ class RfalRfST25R3911BClass : public RfalRfClass {
     ******************************************************************************
     */
 
-    RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_pin, uint32_t spi_speed = 5000000);
+    // RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_pin, uint32_t spi_speed = 5000000);
+    RfalRfST25R3911BClass(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_gpio_port, uint32_t cs_pin, GPIO_TypeDef* int_gpio_port, uint32_t int_pin);
     ReturnCode rfalInitialize(void);
     ReturnCode rfalCalibrate(void);
     ReturnCode rfalAdjustRegulators(uint16_t *result);
@@ -1824,10 +1826,15 @@ class RfalRfST25R3911BClass : public RfalRfClass {
      */
     void  st25r3911Isr(void);
 
-    SPIClass *dev_spi;
-    int cs_pin;
-    int int_pin;
-    uint32_t spi_speed;
+    // SPIClass *dev_spi;
+    // int cs_pin;
+    // int int_pin;
+    // uint32_t spi_speed;
+    SPI_HandleTypeDef *hspi;
+    GPIO_TypeDef *cs_gpio_port;
+    uint32_t cs_pin;
+    GPIO_TypeDef *int_gpio_port;
+    uint32_t int_pin;
 
     rfal gRFAL;              /*!< RFAL module instance               */
     rfalAnalogConfigMgmt gRfalAnalogConfigMgmt;  /*!< Analog Configuration LUT management */

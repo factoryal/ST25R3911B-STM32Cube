@@ -38,7 +38,19 @@
 #include "rfal_rfst25r3911.h"
 
 /*******************************************************************************/
-RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_pin, uint32_t spi_speed) : dev_spi(spi), cs_pin(cs_pin), int_pin(int_pin), spi_speed(spi_speed)
+// RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_pin, uint32_t spi_speed) : dev_spi(spi), cs_pin(cs_pin), int_pin(int_pin), spi_speed(spi_speed)
+// {
+//   memset(&gRFAL, 0, sizeof(rfal));
+//   memset(&gRfalAnalogConfigMgmt, 0, sizeof(rfalAnalogConfigMgmt));
+//   memset(&iso15693PhyConfig, 0, sizeof(iso15693PhyConfig_t));
+//   st25r3911NoResponseTime_64fcs = 0;
+//   memset((void *)&st25r3911interrupt, 0, sizeof(t_st25r3911Interrupt));
+//   timerStopwatchTick = 0;
+//   isr_pending = false;
+//   bus_busy = false;
+//   irq_handler = NULL;
+// }
+RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_gpio_port = NULL, uint32_t cs_pin, GPIO_TypeDef *int_gpio_port, uint32_t int_pin) : hspi(hspi), cs_gpio_port(cs_gpio_port), cs_pin(cs_pin), int_gpio_port(int_gpio_port), int_pin(int_pin)
 {
   memset(&gRFAL, 0, sizeof(rfal));
   memset(&gRfalAnalogConfigMgmt, 0, sizeof(rfalAnalogConfigMgmt));
@@ -52,15 +64,17 @@ RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_
 }
 
 
+
 ReturnCode RfalRfST25R3911BClass::rfalInitialize(void)
 {
-  pinMode(cs_pin, OUTPUT);
-  digitalWrite(cs_pin, HIGH);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
+  // pinMode(cs_pin, OUTPUT);
+  // digitalWrite(cs_pin, HIGH);
 
-  pinMode(int_pin, INPUT);
+  // pinMode(int_pin, INPUT);
   Callback<void()>::func = std::bind(&RfalRfST25R3911BClass::st25r3911Isr, this);
   irq_handler = static_cast<ST25R3911BIrqHandler>(Callback<void()>::callback);
-  attachInterrupt(int_pin, irq_handler, RISING);
+  // attachInterrupt(int_pin, irq_handler, RISING);
 
   rfalAnalogConfigInitialize();              /* Initialize RFAL's Analog Configs */
 
@@ -220,7 +234,7 @@ ReturnCode RfalRfST25R3911BClass::rfalDeinitialize(void)
 
   gRFAL.state = RFAL_STATE_IDLE;
 
-  detachInterrupt(int_pin);
+  // detachInterrupt(int_pin);
   irq_handler = NULL;
 
   return ERR_NONE;
