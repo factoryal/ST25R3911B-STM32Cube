@@ -97,7 +97,8 @@ void RfalRfST25R3911BClass::st25r3911CheckForReceivedInterrupts(void)
   ST_MEMSET(iregs, (int32_t)(ST25R3911_IRQ_MASK_ALL & 0xFFU), ST25R3911_INT_REGS_LEN);    /* MISRA 10.3 */
 
   /* In case the IRQ is Edge (not Level) triggered read IRQs until done */
-  while (digitalRead(int_pin) == HIGH) {
+  // while (digitalRead(int_pin) == HIGH) {
+  while (HAL_GPIO_ReadPin(int_gpio_port, int_pin) == GPIO_PIN_SET) {
     st25r3911ReadMultipleRegisters(ST25R3911_REG_IRQ_MAIN, iregs, sizeof(iregs));
 
     irqStatus |= (uint32_t)iregs[0];

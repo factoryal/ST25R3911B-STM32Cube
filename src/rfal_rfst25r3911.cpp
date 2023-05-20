@@ -50,7 +50,7 @@
 //   bus_busy = false;
 //   irq_handler = NULL;
 // }
-RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_gpio_port = NULL, uint32_t cs_pin, GPIO_TypeDef *int_gpio_port, uint32_t int_pin) : hspi(hspi), cs_gpio_port(cs_gpio_port), cs_pin(cs_pin), int_gpio_port(int_gpio_port), int_pin(int_pin)
+RfalRfST25R3911BClass::RfalRfST25R3911BClass(SPI_HandleTypeDef *hspi, GPIO_TypeDef *cs_gpio_port = NULL, uint16_t cs_pin = 0, GPIO_TypeDef *int_gpio_port = NULL, uint16_t int_pin = 0) : hspi(hspi), cs_gpio_port(cs_gpio_port), cs_pin(cs_pin), int_gpio_port(int_gpio_port), int_pin(int_pin)
 {
   memset(&gRFAL, 0, sizeof(rfal));
   memset(&gRfalAnalogConfigMgmt, 0, sizeof(rfalAnalogConfigMgmt));

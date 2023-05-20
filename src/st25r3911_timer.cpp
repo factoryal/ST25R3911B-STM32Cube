@@ -61,7 +61,8 @@
 /*******************************************************************************/
 uint32_t RfalRfST25R3911BClass::timerCalculateTimer(uint16_t time)
 {
-  return (millis() + time);
+  // return (millis() + time);
+  return (HAL_GetTick() + time);
 }
 
 
@@ -71,7 +72,8 @@ bool RfalRfST25R3911BClass::timerIsExpired(uint32_t timer)
   uint32_t uDiff;
   int32_t sDiff;
 
-  uDiff = (timer - millis());   /* Calculate the diff between the timers */
+  // uDiff = (timer - millis());   /* Calculate the diff between the timers */
+  uDiff = (timer - HAL_GetTick());   /* Calculate the diff between the timers */
   sDiff = uDiff;                            /* Convert the diff to a signed var      */
   /* Having done this has two side effects:
    * 1) all differences smaller than -(2^31) ms (~25d) will become positive
@@ -102,13 +104,15 @@ void RfalRfST25R3911BClass::timerDelay(uint16_t tOut)
 /*******************************************************************************/
 void RfalRfST25R3911BClass::timerStopwatchStart(void)
 {
-  timerStopwatchTick = millis();
+  // timerStopwatchTick = millis();
+  timerStopwatchTick = HAL_GetTick();
 }
 
 
 /*******************************************************************************/
 uint32_t RfalRfST25R3911BClass::timerStopwatchMeasure(void)
 {
-  return (uint32_t)(millis() - timerStopwatchTick);
+  // return (uint32_t)(millis() - timerStopwatchTick);
+  return (uint32_t)(HAL_GetTick() - timerStopwatchTick);
 }
 

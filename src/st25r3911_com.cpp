@@ -80,14 +80,18 @@ void RfalRfST25R3911BClass::st25r3911ReadRegister(uint8_t reg, uint8_t *value)
   buf[0] = (reg | ST25R3911_READ_MODE);
   buf[1] = 0;
 
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
 
-  digitalWrite(cs_pin, LOW);
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((void *)buf, 2);
+  // dev_spi->transfer((void *)buf, 2);
 
-  digitalWrite(cs_pin, HIGH);
-  dev_spi->endTransaction();
+  // digitalWrite(cs_pin, HIGH);
+  // dev_spi->endTransaction();
+
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+  HAL_SPI_TransmitReceive(hspi, buf, buf, 2, 10);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
   if (value != NULL) {
     *value = buf[1];
@@ -108,16 +112,21 @@ void RfalRfST25R3911BClass::st25r3911ReadMultipleRegisters(uint8_t reg, uint8_t 
   if (length > 0U) {
     bus_busy = true;
     /* Setting Transaction Parameters */
-    dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-    digitalWrite(cs_pin, LOW);
+    // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+    // digitalWrite(cs_pin, LOW);
 
-    /* Since the result comes one byte later, let's first transmit the address with discarding the result */
-    dev_spi->transfer((reg | ST25R3911_READ_MODE));
+    // /* Since the result comes one byte later, let's first transmit the address with discarding the result */
+    // dev_spi->transfer((reg | ST25R3911_READ_MODE));
 
-    dev_spi->transfer((void *)values, length);
+    // dev_spi->transfer((void *)values, length);
 
-    digitalWrite(cs_pin, HIGH);
-    dev_spi->endTransaction();
+    // digitalWrite(cs_pin, HIGH);
+    // dev_spi->endTransaction();
+    uint8_t cmd = (reg | ST25R3911_READ_MODE);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(hspi, &cmd, 1, 10);
+    HAL_SPI_TransmitReceive(hspi, values, values, length, 10);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
     bus_busy = false;
     if (isr_pending) {
@@ -140,18 +149,25 @@ void RfalRfST25R3911BClass::st25r3911ReadTestRegister(uint8_t reg, uint8_t *valu
   buf[2] = 0x00;
 
   /* Setting Transaction Parameters */
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-  digitalWrite(cs_pin, LOW);
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((void *)buf, 3);
+  // dev_spi->transfer((void *)buf, 3);
 
-  if (value != NULL) {
-    *value = buf[2];
-  }
+  // if (value != NULL) {
+  //   *value = buf[2];
+  // }
 
-  digitalWrite(cs_pin, HIGH);
+  // digitalWrite(cs_pin, HIGH);
 
-  dev_spi->endTransaction();
+  // dev_spi->endTransaction();
+  
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+    HAL_SPI_TransmitReceive(hspi, buf, buf, 3, 10);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
+    if (value != NULL) {
+      *value = buf[2];
+    }
 
   bus_busy = false;
   if (isr_pending) {
@@ -173,14 +189,17 @@ void RfalRfST25R3911BClass::st25r3911WriteTestRegister(uint8_t reg, uint8_t valu
   buf[2] = value;
 
   /* Setting Transaction Parameters */
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-  digitalWrite(cs_pin, LOW);
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((void *)buf, 3);
+  // dev_spi->transfer((void *)buf, 3);
 
-  digitalWrite(cs_pin, HIGH);
+  // digitalWrite(cs_pin, HIGH);
 
-  dev_spi->endTransaction();
+  // dev_spi->endTransaction();
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+  HAL_SPI_TransmitReceive(hspi, buf, buf, 3, 10);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
   bus_busy = false;
   if (isr_pending) {
@@ -200,14 +219,17 @@ void RfalRfST25R3911BClass::st25r3911WriteRegister(uint8_t reg, uint8_t value)
   buf[0] = reg | ST25R3911_WRITE_MODE;
   buf[1] = value;
 
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
 
-  digitalWrite(cs_pin, LOW);
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((void *)buf, 2);
+  // dev_spi->transfer((void *)buf, 2);
 
-  digitalWrite(cs_pin, HIGH);
-  dev_spi->endTransaction();
+  // digitalWrite(cs_pin, HIGH);
+  // dev_spi->endTransaction();
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(hspi, buf, 2, 10);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
   bus_busy = false;
   if (isr_pending) {
@@ -290,16 +312,21 @@ void RfalRfST25R3911BClass::st25r3911WriteMultipleRegisters(uint8_t reg, const u
   if (length > 0U) {
     bus_busy = true;
     /* Setting Transaction Parameters */
-    dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-    digitalWrite(cs_pin, LOW);
+    // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+    // digitalWrite(cs_pin, LOW);
 
-    /* Since the result comes one byte later, let's first transmit the address with discarding the result */
-    dev_spi->transfer((reg | ST25R3911_WRITE_MODE));
+    // /* Since the result comes one byte later, let's first transmit the address with discarding the result */
+    // dev_spi->transfer((reg | ST25R3911_WRITE_MODE));
 
-    dev_spi->transfer((void *)tx, length);
+    // dev_spi->transfer((void *)tx, length);
 
-    digitalWrite(cs_pin, HIGH);
-    dev_spi->endTransaction();
+    // digitalWrite(cs_pin, HIGH);
+    // dev_spi->endTransaction();
+    uint8_t cmd = (reg | ST25R3911_WRITE_MODE);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(hspi, &cmd, 1, 10);
+    HAL_SPI_Transmit(hspi, tx, length, 10);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
     bus_busy = false;
     if (isr_pending) {
@@ -323,16 +350,21 @@ void RfalRfST25R3911BClass::st25r3911WriteFifo(const uint8_t *values, uint8_t le
   if (length > 0U) {
     bus_busy = true;
     /* Setting Transaction Parameters */
-    dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-    digitalWrite(cs_pin, LOW);
+    // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+    // digitalWrite(cs_pin, LOW);
 
-    /* Since the result comes one byte later, let's first transmit the address with discarding the result */
-    dev_spi->transfer(ST25R3911_FIFO_LOAD);
+    // /* Since the result comes one byte later, let's first transmit the address with discarding the result */
+    // dev_spi->transfer(ST25R3911_FIFO_LOAD);
 
-    dev_spi->transfer((void *)tx, length);
+    // dev_spi->transfer((void *)tx, length);
 
-    digitalWrite(cs_pin, HIGH);
-    dev_spi->endTransaction();
+    // digitalWrite(cs_pin, HIGH);
+    // dev_spi->endTransaction();
+    uint8_t cmd = ST25R3911_FIFO_LOAD;
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(hspi, &cmd, 1, 10);
+    HAL_SPI_Transmit(hspi, tx, length, 10);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
     bus_busy = false;
     if (isr_pending) {
@@ -349,16 +381,22 @@ void RfalRfST25R3911BClass::st25r3911ReadFifo(uint8_t *buf, uint8_t length)
   if (length > 0U) {
     bus_busy = true;
     /* Setting Transaction Parameters */
-    dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
-    digitalWrite(cs_pin, LOW);
+    // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+    // digitalWrite(cs_pin, LOW);
 
-    /* Since the result comes one byte later, let's first transmit the address with discarding the result */
-    dev_spi->transfer(ST25R3911_FIFO_READ);
+    // /* Since the result comes one byte later, let's first transmit the address with discarding the result */
+    // dev_spi->transfer(ST25R3911_FIFO_READ);
 
-    dev_spi->transfer((void *)buf, length);
+    // dev_spi->transfer((void *)buf, length);
 
-    digitalWrite(cs_pin, HIGH);
-    dev_spi->endTransaction();
+    // digitalWrite(cs_pin, HIGH);
+    // dev_spi->endTransaction();
+    
+    uint8_t cmd = ST25R3911_FIFO_READ;
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(hspi, &cmd, 1, 10);
+    HAL_SPI_TransmitReceive(hspi, buf, buf, length, 10);
+    if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_SET);
 
     bus_busy = false;
     if (isr_pending) {
@@ -373,14 +411,19 @@ void RfalRfST25R3911BClass::st25r3911ReadFifo(uint8_t *buf, uint8_t length)
 void RfalRfST25R3911BClass::st25r3911ExecuteCommand(uint8_t cmd)
 {
   bus_busy = true;
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
 
-  digitalWrite(cs_pin, LOW);
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((cmd | ST25R3911_CMD_MODE));
+  // dev_spi->transfer((cmd | ST25R3911_CMD_MODE));
 
-  digitalWrite(cs_pin, HIGH);
-  dev_spi->endTransaction();
+  // digitalWrite(cs_pin, HIGH);
+  // dev_spi->endTransaction();
+  
+  uint8_t _cmd = (cmd | ST25R3911_CMD_MODE);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(hspi, &_cmd, 1, 10);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
 
   bus_busy = false;
   if (isr_pending) {
@@ -402,14 +445,18 @@ void RfalRfST25R3911BClass::st25r3911ExecuteCommands(const uint8_t *cmds, uint8_
 
   bus_busy = true;
 
-  dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
+  // dev_spi->beginTransaction(SPISettings(spi_speed, MSBFIRST, SPI_MODE1));
 
-  digitalWrite(cs_pin, LOW);
+  // digitalWrite(cs_pin, LOW);
 
-  dev_spi->transfer((void *)tx, length);
+  // dev_spi->transfer((void *)tx, length);
 
-  digitalWrite(cs_pin, HIGH);
-  dev_spi->endTransaction();
+  // digitalWrite(cs_pin, HIGH);
+  // dev_spi->endTransaction();
+
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(hspi, tx, length, 10);
+  if(cs_gpio_port != NULL) HAL_GPIO_WritePin(cs_gpio_port, cs_pin, GPIO_PIN_RESET);
 
   bus_busy = false;
   if (isr_pending) {

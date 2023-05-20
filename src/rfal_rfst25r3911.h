@@ -375,7 +375,7 @@ class RfalRfST25R3911BClass : public RfalRfClass {
     */
 
     // RfalRfST25R3911BClass(SPIClass *spi, int cs_pin, int int_pin, uint32_t spi_speed = 5000000);
-    RfalRfST25R3911BClass(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_gpio_port, uint32_t cs_pin, GPIO_TypeDef* int_gpio_port, uint32_t int_pin);
+    RfalRfST25R3911BClass(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_gpio_port, uint16_t cs_pin, GPIO_TypeDef* int_gpio_port, uint16_t int_pin);
     ReturnCode rfalInitialize(void);
     ReturnCode rfalCalibrate(void);
     ReturnCode rfalAdjustRegulators(uint16_t *result);
@@ -1824,17 +1824,19 @@ class RfalRfST25R3911BClass : public RfalRfClass {
      *  This function modifies the interrupt
      *****************************************************************************
      */
+  public:
     void  st25r3911Isr(void);
 
+  protected:
     // SPIClass *dev_spi;
     // int cs_pin;
     // int int_pin;
     // uint32_t spi_speed;
     SPI_HandleTypeDef *hspi;
     GPIO_TypeDef *cs_gpio_port;
-    uint32_t cs_pin;
+    uint16_t cs_pin;
     GPIO_TypeDef *int_gpio_port;
-    uint32_t int_pin;
+    uint16_t int_pin;
 
     rfal gRFAL;              /*!< RFAL module instance               */
     rfalAnalogConfigMgmt gRfalAnalogConfigMgmt;  /*!< Analog Configuration LUT management */
